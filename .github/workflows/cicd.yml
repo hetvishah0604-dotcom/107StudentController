@@ -1,4 +1,4 @@
-name : Deploy React APP
+name: CI/CD Python Backend & Render Deploy
 
 on:
   push:
@@ -6,25 +6,24 @@ on:
       - main
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
         with:
-          node-version: '22'
-          cache: 'npm'
-      
+          python-version: '3.13.2'
+          cache: 'pip'
+
       - name: Install dependencies
-        run: npm ci
-
-      - name: Build React app
-        run: npm run build
-
-      - name: Deploy to Render
         run: |
-          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Trigger Render Deploy
+        run: |
+          curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
