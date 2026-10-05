@@ -1,4 +1,4 @@
-name: Trigger Render Deploy
+name: Student CRUD CI/CD
 
 on:
   push:
@@ -6,13 +6,24 @@ on:
       - main
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Trigger Render Deploy Hook
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+
+      - name: Install dependencies
         run: |
-          curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Check FastAPI app
+        run: |
+          python -c "from main import app; print('FastAPI app loaded successfully')"
